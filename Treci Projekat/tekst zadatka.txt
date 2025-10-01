@@ -1,0 +1,8 @@
+Zadatak 2:
+
+Koristeći principe Reaktivnog programiranja i YouTube API, implementirati aplikaciju za analizu
+komentara za zadate video snimke (moguće je proslediti identifikatore video snimaka). Za
+prikupljene komentare implementirati Sentiment analizu koristeći SentimentAnalysis.NET ili
+ML.NET biblioteke. Sentiment računati na nivou videa. Prikazati dobijene rezultate.
+
+Dokumentacija dostupna na linku: https://developers.google.com/youtube/v3/docs
