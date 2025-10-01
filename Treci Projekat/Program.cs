@@ -3,22 +3,27 @@ using System.Threading.Tasks;
 using Google.Apis.YouTube.v3;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.YouTube.v3.Data;
+using Google.Apis.Services;
 
 
-namespace CommentSentimentRx // optional—use your project’s namespace
+namespace TreciProjekat // optional—use your project’s namespace
 {
     internal static class Program
     {
-        // sync Main
-        // public static void Main(string[] args)
-        // {
-        //     Console.WriteLine("Hello, World!");
-        // }
-
-        // or async Main (handy for HTTP calls, etc.)
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            DotNetEnv.Env.TraversePath().Load();
+            string ApiKey = Environment.GetEnvironmentVariable("YOUTUBE_API_KEY")
+                ?? throw new InvalidOperationException("Missing YOUTUBE_API_KEY");
+
+            var yt = new YouTubeService(new BaseClientService.Initializer
+            {
+
+                ApiKey = ApiKey,
+                ApplicationName = "TreciProjekat"
+            });
+
+            Console.WriteLine(ApiKey);
             Console.ReadLine();
             await Task.CompletedTask;
         }
