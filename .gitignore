@@ -1,0 +1,25 @@
+# (optional) put common ignores for .NET/VS + your .env
+@"
+# Build outputs
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Editors (optional)
+.vscode/
+.idea/
+
+# Logs & caches
+*.log
+TestResult*/
+
+# NuGet (old style)
+packages/
+
+# Secrets for your assignment
+.env
+.env.*
