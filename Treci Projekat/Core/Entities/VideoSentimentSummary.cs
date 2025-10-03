@@ -15,14 +15,22 @@ namespace Treci_Projekat.Core.Entities
         public VideoSentimentSummary(string videoId) { VideoId = videoId; }
 
         private double _probSum;
+        public (string Text, double P)? TopPositive {  get; private set; }
+        public (string Text, double P)? TopNegative { get; private set; }
+
 
         public void Add(YouTubeComment prediction)
         {
             TotalComments++;
             _probSum += prediction.Probability;
 
-            if (prediction.isPositive) PositiveCount++;
+            if (prediction.IsPositive) PositiveCount++;
 
+            if(TopPositive is null || prediction.Probability > TopPositive.Value.P)
+                TopPositive = (prediction.Text, prediction.Probability);
+
+            if (TopNegative is null || prediction.Probability > TopNegative.Value.P)
+                TopNegative = (prediction.Text, prediction.Probability);
         }
     }
 }
