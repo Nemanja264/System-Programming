@@ -51,6 +51,11 @@ namespace Treci_Projekat.Services
             return new PredictionService(ml, model);
         }
 
+        public (bool Predicted, float Probability) Predict(string text)
+        {
+            var o = _engine.Predict(new InputRow { Text = text });
+            return (o.PredictedLabel, o.Probability);
+        }
         public sealed class InputRow
         {
             [LoadColumn(0)] public string Text { get; set; } = "";
