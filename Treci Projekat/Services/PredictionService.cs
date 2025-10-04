@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.ML;
 using Microsoft.ML.Data;
+using System.IO;
+
 
 namespace Treci_Projekat.Services
 {
@@ -23,17 +25,18 @@ namespace Treci_Projekat.Services
         {
             var ml = new MLContext(seed: 42);
 
-            if(File.Exists(modelPath))
+            if (File.Exists(modelPath))
             {
                 using var fs = File.OpenRead(modelPath);
-                var model = ml.Model.Load(fs, out _);
-                return new PredictionService(ml, model);
+                var mod = ml.Model.Load(fs, out _);
+                return new PredictionService(ml, mod);
             }
 
             if (!File.Exists(trainingDataPath))
                 throw new FileNotFoundException("Training data is not found");
 
-            var data = ml.Data.LoadFromTextFile<InputRow>(trainingDataPath, hasHeader: true, separatorChar: '\t');
+            var raw = ml.Data.LoadFromTextFile<InputRow>(trainingDataPath, hasHeader: true, separatorChar: '\t');
+            var data = ml.Data.Cache(raw);
             var split = ml.Data.TrainTestSplit(data, testFraction:0.2 , seed: 42);
 
             var pipeline = ml.Transforms.Text.FeaturizeText("Features", nameof(InputRow.Text))
@@ -43,7 +46,7 @@ namespace Treci_Projekat.Services
 
             var model = pipeline.Fit(split.TrainSet);
 
-            var metrics = ml.BinaryClassification.Evaluate(model.Transform(split.TrainSet), labelColumnName: nameof(InputRow.Label));
+            Directory.CreateDirectory(Path.GetDirectoryName(modelPath) ?? ".");
 
             using var outFS = File.Create(modelPath);
             ml.Model.Save(model, split.TrainSet.Schema, outFS);

@@ -13,21 +13,16 @@ namespace Treci_Projekat // optional—use your project’s namespace
     {
         public static async Task Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                Console.WriteLine("Usage: dotnet run -- <YoutubeVideoId> [<YoutubeVideoId>,...]"
-                return;
-            }
+            string modelPath = args.Length > 0 ? args[0] : "models/ml_prediction.zip";
+            string trainingData = args.Length > 1 ? args[1] : "data/training_data.tsv";
+            string prefix = "http://localhost:8080/";
+
+            var server = new WebServer(prefix, modelPath, trainingData);
+            server.Start();
             
-            var apiKey = ApiKeyProvider.getApiKey();
-            var yt = new YouTubeService(new BaseClientService.Initializer
-            {
 
-                ApiKey = apiKey,
-                ApplicationName = "TreciProjekat"
-            });
 
-            Console.WriteLine(apiKey);
+
             Console.ReadLine();
             await Task.CompletedTask;
         }

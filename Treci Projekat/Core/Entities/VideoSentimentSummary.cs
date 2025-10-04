@@ -24,13 +24,18 @@ namespace Treci_Projekat.Core.Entities
             TotalComments++;
             _probSum += prediction.Probability;
 
-            if (prediction.IsPositive) PositiveCount++;
-
-            if(TopPositive is null || prediction.Probability > TopPositive.Value.P)
-                TopPositive = (prediction.Text, prediction.Probability);
-
-            if (TopNegative is null || prediction.Probability > TopNegative.Value.P)
-                TopNegative = (prediction.Text, prediction.Probability);
+            if (prediction.IsPositive)
+            {
+                PositiveCount++;
+                if ((TopPositive is null || prediction.Probability > TopPositive.Value.P))
+                    TopPositive = (prediction.Text, prediction.Probability);
+            }
+            else
+            {
+                var negScore = 1.0 - prediction.Probability;
+                if (TopNegative is null || negScore > TopNegative.Value.P)
+                    TopNegative = (prediction.Text, negScore);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ using Treci_Projekat.Core.Entities;
 
 namespace Treci_Projekat.Core.Interfaces
 {
-    internal interface IYouTubeCommentService : IDisposable
+    public interface IYouTubeCommentService : IDisposable
     {
         IObservable<YouTubeComment> GetTopLevelComments(string videoId);
     }

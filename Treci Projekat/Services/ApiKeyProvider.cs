@@ -20,8 +20,7 @@ namespace Treci_Projekat.Services
                 _loaded = true;
             }
 
-            string ApiKey = Environment.GetEnvironmentVariable("YOUTUBE_API_KEY")
-                ?? throw new InvalidOperationException("Missing YOUTUBE_API_KEY");
+            var ApiKey = Environment.GetEnvironmentVariable("YOUTUBE_API_KEY");
 
             return ApiKey;
         }
