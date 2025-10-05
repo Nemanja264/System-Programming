@@ -13,16 +13,16 @@ namespace Treci_Projekat // optional—use your project’s namespace
     {
         public static async Task Main(string[] args)
         {
-            string modelPath = args.Length > 0 ? args[0] : "models/ml_prediction.zip";
-            string trainingData = args.Length > 1 ? args[1] : "data/training_data.tsv";
-            string prefix = "http://localhost:8080/";
+            string root = Directory.GetCurrentDirectory();
+            string modelPath = Path.Combine(root, "data", "sentimentModel.zip");
+            string trainingData = Path.Combine(root, "data", "sentiment.tsv");
+            string prefix = "http://localhost:5055/";
 
             var server = new WebServer(prefix, modelPath, trainingData);
             server.Start();
-            
 
-
-
+            Console.WriteLine($"Server running at {prefix}");
+            Console.WriteLine("PRES ENTER TO STOP");
             Console.ReadLine();
             await Task.CompletedTask;
         }

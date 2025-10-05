@@ -31,7 +31,7 @@ namespace Treci_Projekat.Services
                 var mod = ml.Model.Load(fs, out _);
                 return new PredictionService(ml, mod);
             }
-
+            
             if (!File.Exists(trainingDataPath))
                 throw new FileNotFoundException("Training data is not found");
 
