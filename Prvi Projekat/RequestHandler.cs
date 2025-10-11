@@ -7,18 +7,12 @@ using System.Text;
 
 namespace Prvi_Projekat
 {
-    /// <summary>
-    /// Klasa odgovorna za obradu pojedinacnog HTTP zahteva.
-    /// </summary>
+    
     public class RequestHandler
     {
-        // Thread-safe recnik za kesiranje.
+        
         private static readonly ConcurrentDictionary<string, string> Cache = new ConcurrentDictionary<string, string>();
 
-        /// <summary>
-        /// Metoda koja obradjuje pojedinacni HTTP zahtev.
-        /// Izvrsava se na niti iz ThreadPool-a.
-        /// </summary>
         public void ProcessRequest(HttpListenerContext context)
         {
             if (context.Request.Url == null)
@@ -30,6 +24,8 @@ namespace Prvi_Projekat
 
             if (fileName.ToLower() == "favicon.ico")
             {
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
+                context.Response.Close();
                 return;
             }
 
@@ -40,9 +36,9 @@ namespace Prvi_Projekat
             string responseString;
             string? hash;
 
-            // Provera da li hash za trazeni fajl vec postoji u kesu.
             if (Cache.TryGetValue(filePath, out hash))
             {
+                context.Response.StatusCode = (int)HttpStatusCode.OK; 
                 responseString = $"Odgovor iz KESA: SHA256 hash za '{fileName}' je: {hash}";
                 Program.Log($"Hash za '{fileName}' pronadjen u kesu.");
             }
@@ -51,16 +47,24 @@ namespace Prvi_Projekat
                 responseString = ProcessFile(filePath, fileName, context);
             }
 
-            // Priprema i slanje odgovora klijentu.
-            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-            context.Response.ContentLength64 = buffer.Length;
-            context.Response.OutputStream.Write(buffer, 0, buffer.Length);
-            context.Response.OutputStream.Close();
+            
+            try
+            {
+                byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+                context.Response.ContentLength64 = buffer.Length;
+                context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+            }
+            catch (Exception ex)
+            {
+                Program.Log($"Greska prilikom slanja odgovora: {ex.Message}");
+            }
+            finally
+            {
+                context.Response.OutputStream.Close();
+            }
         }
 
-        /// <summary>
-        /// Obradjuje fajl - cita ga, kriptuje i dodaje u kes.
-        /// </summary>
+        
         private string ProcessFile(string filePath, string fileName, HttpListenerContext context)
         {
             try

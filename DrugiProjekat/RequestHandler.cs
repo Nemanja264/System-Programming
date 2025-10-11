@@ -8,18 +8,10 @@ using System.Threading.Tasks;
 
 namespace DrugiProjekat
 {
-    /// <summary>
-    /// Klasa odgovorna za asinhronu obradu pojedinacnog HTTP zahteva.
-    /// </summary>
     public class RequestHandler
     {
-        // Thread-safe recnik za kesiranje. Isti kao u prvom projektu, jer je ConcurrentDictionary
-        // dizajniran za konkurentni pristup i bezbedan je za upotrebu sa async/await.
         private static readonly ConcurrentDictionary<string, string> Cache = new ConcurrentDictionary<string, string>();
 
-        /// <summary>
-        /// Asinhrono obradjuje pojedinacni HTTP zahtev.
-        /// </summary>
         public async Task ProcessRequestAsync(HttpListenerContext context)
         {
             if (context.Request.Url == null)
@@ -30,7 +22,6 @@ namespace DrugiProjekat
             }
             string fileName = context.Request.Url.AbsolutePath.Trim('/');
             
-            // Ignorisemo zahteve za favicon.ico
             if (fileName.ToLower() == "favicon.ico")
             {
                 context.Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -43,7 +34,6 @@ namespace DrugiProjekat
 
             string responseString;
 
-            // Provera da li hash za trazeni fajl vec postoji u kesu.
             if (Cache.TryGetValue(filePath, out string? hash))
             {
                 responseString = $"Odgovor iz KESA: SHA256 hash za '{fileName}' je: {hash}";
@@ -51,13 +41,11 @@ namespace DrugiProjekat
             }
             else
             {
-                // Ako nije u kesu, obradjujemo fajl asinhrono.
                 responseString = await ProcessFileAsync(filePath, fileName, context);
             }
 
             try
             {
-                // Priprema i slanje odgovora klijentu asinhrono.
                 byte[] buffer = Encoding.UTF8.GetBytes(responseString);
                 context.Response.ContentLength64 = buffer.Length;
                 await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
@@ -72,24 +60,22 @@ namespace DrugiProjekat
             }
         }
 
-        /// <summary>
-        /// Asinhrono obradjuje fajl - cita ga, kriptuje i dodaje u kes.
-        /// </summary>
         private async Task<string> ProcessFileAsync(string filePath, string fileName, HttpListenerContext context)
         {
             try
             {
                 if (File.Exists(filePath))
                 {
-                    // Asinhrono citanje fajla. Ovo je I/O operacija koja ne blokira nit.
                     byte[] fileBytes = await File.ReadAllBytesAsync(filePath);
 
-                    // Kriptovanje je CPU-bound operacija. Za vrlo velike fajlove, moglo bi se
-                    // razmisliti o Task.Run(() => ...), ali za prosecne velicine ovo je dovoljno brzo
-                    // i nece znacajno blokirati nit iz ThreadPool-a.
                     using (SHA256 sha256 = SHA256.Create())
                     {
+                        /* u konkretnoj situaciji posto je ComputeHash brza f-ja vise bi vremena
+                         utrosili na kreiranje taska nego da se ona izvrsi pa se ne isplati*/
+                        
+                        //byte[] hashBytes = await Task.Run(() => sha256.ComputeHash(fileBytes));
                         byte[] hashBytes = sha256.ComputeHash(fileBytes);
+
                         string hash = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
                         
                         Cache.TryAdd(filePath, hash);
