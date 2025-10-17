@@ -1,0 +1,7 @@
+﻿Kreirati Web server koji vrši kriptovanje fajla. Za proces kriptovanja se može koristiti SHA256 iz
+System.Security.Cryptography.Alterantivno, moguće je koristiti SharpHash biblioteku
+(biblioteku je moguće instalirati korišćenjem NuGet package managera).Svi zahtevi serveru se
+šalju preko browser-a korišćenjem GET metode. U zahtevu se kao parametar navodi naziv fajla.
+Server prihvata zahtev, pretražuje root folder za zahtevani fajl i vrši kriptovanje. Ukoliko traženi
+fajl ne postoji, vratiti grešku korisniku.
+Primer poziva serveru: http://localhost:5050/fajl.txt
