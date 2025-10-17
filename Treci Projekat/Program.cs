@@ -7,7 +7,7 @@ using Google.Apis.Services;
 using Treci_Projekat.Services;
 
 
-namespace Treci_Projekat // optional—use your project’s namespace
+namespace Treci_Projekat
 {
     internal static class Program
     {
@@ -22,7 +22,7 @@ namespace Treci_Projekat // optional—use your project’s namespace
             server.Start();
 
             Console.WriteLine($"Server running at {prefix}");
-            Console.WriteLine("PRES ENTER TO STOP");
+            Console.WriteLine("PRESS ENTER TO STOP");
             Console.ReadLine();
             await Task.CompletedTask;
         }
