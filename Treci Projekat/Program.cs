@@ -24,6 +24,7 @@ namespace Treci_Projekat
             Console.WriteLine($"Server running at {prefix}");
             Console.WriteLine("PRESS ENTER TO STOP");
             Console.ReadLine();
+            server.Stop();
             await Task.CompletedTask;
         }
     }
