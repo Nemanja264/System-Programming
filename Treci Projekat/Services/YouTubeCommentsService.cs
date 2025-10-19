@@ -9,11 +9,12 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Treci_Projekat.Core.Entities;
+using Treci_Projekat.Core.Interfaces;
 using Treci_Projekat.Infrastructure;
 
 namespace Treci_Projekat.Services
 {
-    public sealed class YouTubeCommentsService : IDisposable
+    public sealed class YouTubeCommentsService : IYouTubeCommentService
     {
         private readonly YouTubeSettings _settings;
         private readonly HttpClient _httpClient = new();
